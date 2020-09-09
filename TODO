@@ -1,0 +1,9 @@
+# Todo list for the publication of the code
+
+1) Clear folder structure for ease of use
+2) Comment code and delete unnecessary code snippets
+3) New names for the variables for ease of readability
+4) Include demo file, e.g. with Shepp-Logan phantom
+5) Upload the network to some server, e.g. dropbox
+6) Clean up any unnecessary files
+
