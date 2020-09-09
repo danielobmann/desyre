@@ -1,0 +1,11 @@
+# folders
+data/
+images/
+models/
+networks/
+jobs/
+
+# data
+*.npy
+*.h5
+*.hdf5
