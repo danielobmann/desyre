@@ -14,6 +14,7 @@ sess = K.get_session()
 # ----------------------------------------
 # Set up forward operator using ODL library
 
+cmap = 'gray'
 size = 512
 n_theta = 40
 n_s = int(1.5 * size)
@@ -44,7 +45,8 @@ if __name__ == '__main__':
 
     # Generate a box phantom for demonstration of the algorithm
     phantom = np.zeros((size, size))
-    phantom[(size // 2 - 50):(size // 2 + 5), (size // 2 - 50):(size // 2 + 5)] = 1
+    a = 25
+    phantom[(size // 2 - a):(size // 2 + a), (size // 2 - a):(size // 2 + a)] = 1
 
     data = Radon(phantom)
     data_noisy = data + np.random.normal(0, 1, data.shape) * 0.01
@@ -59,27 +61,27 @@ if __name__ == '__main__':
     plt.savefig("images/demo_error.pdf")
 
     fig, axs = plt.subplots(1, 3)
-    im = axs[0].imshow(phantom, cmap='bone')
+    im = axs[0].imshow(phantom, cmap=cmap)
     plt.colorbar(im, ax=axs[0], fraction=0.046, pad=0.04)
     axs[0].set_title("True phantom")
 
-    im = axs[1].imshow(x0, cmap='bone')
+    im = axs[1].imshow(x0, cmap=cmap)
     plt.colorbar(im, ax=axs[1], fraction=0.046, pad=0.04)
     axs[1].set_title("FBP phantom")
 
-    im = axs[2].imshow(x_desyre, cmap='bone')
+    im = axs[2].imshow(x_desyre, cmap=cmap)
     plt.colorbar(im, ax=axs[2], fraction=0.046, pad=0.04)
     axs[2].set_title("DESYRE phantom")
     plt.subplots_adjust(wspace=0.8)
     plt.savefig("images/demo_reconstruction.pdf")
 
     fig, axs = plt.subplots(1, 2)
-    im = axs[0].imshow(data, cmap='bone')
+    im = axs[0].imshow(data, cmap=cmap)
     axs[0].set_aspect(n_s / n_theta)
     axs[0].set_title("True data")
     plt.colorbar(im, ax=axs[0], fraction=0.046, pad=0.04)
 
-    im = axs[1].imshow(data_noisy, cmap='bone')
+    im = axs[1].imshow(data_noisy, cmap=cmap)
     axs[1].set_aspect(n_s / n_theta)
     axs[1].set_title("Noisy data")
     plt.colorbar(im, ax=axs[1], fraction=0.046, pad=0.04)
@@ -87,30 +89,46 @@ if __name__ == '__main__':
     plt.savefig("images/demo_data.pdf")
 
 
-    def generate_atom(non_zero=5, i=-1, c=1, idx=None, idy=None):
-        j = 0
+    def generate_atom(non_zero=5, I=[-1], c=1, idx=None, idy=None):
         xi = [np.zeros(s) for s in desyre.input_shape]
-        temp = np.zeros_like(xi[i])
-        x, y = temp.shape[1], temp.shape[2]
-        while j < non_zero:
-            if idx is None:
-                idx = np.random.choice(x)
-            if idy is None:
-                idy = np.random.choice(y)
-            temp[0, idx, idy, 0] = c
-            j += 1
-        xi[i] = temp
+        for i in I:
+            j = 0
+            temp = np.zeros_like(xi[i])
+            x, y = temp.shape[1], temp.shape[2]
+            while j < non_zero:
+                if idx is None:
+                    idx = np.random.choice(x)
+                if idy is None:
+                    idy = np.random.choice(y)
+                temp[0, idx, idy, 0] = c
+                j += 1
+            xi[i] = temp
         return d.predict(xi)[0, ..., 0]
 
+    idx, idy = 16, 16
+    C = [-3, -2, -1, 1, 2, 3]
     fig, axs = plt.subplots(4, 6)
     for row, i in enumerate([-1, -2, -3, -4]):
-        for col, c in enumerate([-3, -2, -1, 1, 2, 3]):
-            atom = generate_atom(i=i, c=c, non_zero=1, idx=10, idy=10)
-            axs[row, col].imshow(atom, cmap='bone')
+        for col, c in enumerate(C):
+            atom = generate_atom(I=[i], c=c, non_zero=1)
+            axs[row, col].imshow(atom, cmap=cmap)
             axs[row, col].axis('off')
             if row == 0:
                 axs[row, col].set_title("c=%d" % c)
 
     plt.subplots_adjust(wspace=-0.1)
-    plt.suptitle("Images synthesized from 1 non-nonzero entry")
+    plt.suptitle("Images synthesized from 1 non-zero entry (single levels)")
     plt.savefig("images/demo_atoms.pdf")
+
+    fig, axs = plt.subplots(3, 6)
+    for row, i in enumerate([[-3, -1], [-3, -2], [-3, -4]]):
+        for col, c in enumerate(C):
+            atom = generate_atom(I=i, c=c, non_zero=1)
+            axs[row, col].imshow(atom, cmap=cmap)
+            axs[row, col].axis('off')
+            if row == 0:
+                axs[row, col].set_title("c=%d" % c)
+
+    plt.subplots_adjust(wspace=0.1)
+    plt.suptitle("Images synthesized from 1 non-zero entry (combined levels)")
+    plt.savefig("images/demo_atoms_combined.pdf")
