@@ -1,7 +1,7 @@
 import os
 
 from imports.desyre_optimization import DESYRE
-from imports.customobjects import CustomObjects
+from imports.util import Util
 from keras.models import load_model
 
 import keras.backend as K
@@ -15,7 +15,7 @@ sess = K.get_session()
 # Set up forward operator using ODL library
 
 size = 512
-n_theta = 60
+n_theta = 40
 n_s = int(1.5 * size)
 
 reco_space = odl.uniform_discr(min_pt=[-1, -1], max_pt=[1, 1], shape=[size, size], dtype='float32')
@@ -29,10 +29,10 @@ FBP = odl.tomo.fbp_op(Radon, filter_type='Hann')
 # ----------------------------------------
 # Set up DESYRE optimization with loaded networks
 
-co = CustomObjects(sess)
+util = Util()
 
-e = load_model('models/encoder.h5', custom_objects=co.custom_objects)
-d = load_model('models/decoder.h5', custom_objects=co.custom_objects)
+e = load_model('models/encoder.h5', custom_objects=util.custom_objects)
+d = load_model('models/decoder.h5', custom_objects=util.custom_objects)
 
 desyre = DESYRE(encoder=e, decoder=d, operator=Radon, size=size, sess=sess)
 
@@ -51,7 +51,7 @@ if __name__ == '__main__':
 
     # Initialize optimization with FBP-reconstruction
     x0 = FBP(data_noisy)
-    x_desyre, err = desyre.fista(x0, data_noisy, niter=20, alpha=1e-3, learning_rate=1e-3)
+    x_desyre, err = desyre.fista(x0, data_noisy, niter=30, alpha=1e-3, learning_rate=1e-3)
 
     fig, axs = plt.subplots(1, 1)
     axs.semilogy(err)
@@ -85,3 +85,32 @@ if __name__ == '__main__':
     plt.colorbar(im, ax=axs[1], fraction=0.046, pad=0.04)
     plt.subplots_adjust(wspace=0.5)
     plt.savefig("images/demo_data.pdf")
+
+
+    def generate_atom(non_zero=5, i=-1, c=1, idx=None, idy=None):
+        j = 0
+        xi = [np.zeros(s) for s in desyre.input_shape]
+        temp = np.zeros_like(xi[i])
+        x, y = temp.shape[1], temp.shape[2]
+        while j < non_zero:
+            if idx is None:
+                idx = np.random.choice(x)
+            if idy is None:
+                idy = np.random.choice(y)
+            temp[0, idx, idy, 0] = c
+            j += 1
+        xi[i] = temp
+        return d.predict(xi)[0, ..., 0]
+
+    fig, axs = plt.subplots(4, 6)
+    for row, i in enumerate([-1, -2, -3, -4]):
+        for col, c in enumerate([-3, -2, -1, 1, 2, 3]):
+            atom = generate_atom(i=i, c=c, non_zero=1, idx=10, idy=10)
+            axs[row, col].imshow(atom, cmap='bone')
+            axs[row, col].axis('off')
+            if row == 0:
+                axs[row, col].set_title("c=%d" % c)
+
+    plt.subplots_adjust(wspace=-0.1)
+    plt.suptitle("Images synthesized from 1 non-nonzero entry")
+    plt.savefig("images/demo_atoms.pdf")
