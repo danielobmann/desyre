@@ -105,7 +105,6 @@ if __name__ == '__main__':
             xi[i] = temp
         return d.predict(xi)[0, ..., 0]
 
-    idx, idy = 16, 16
     C = [-3, -2, -1, 1, 2, 3]
     fig, axs = plt.subplots(4, 6)
     for row, i in enumerate([-1, -2, -3, -4]):

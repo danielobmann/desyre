@@ -5,6 +5,7 @@ models/
 networks/
 .idea/
 __pycache__/
+old/
 
 # data
 *.npy
