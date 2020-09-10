@@ -8,8 +8,16 @@ import keras.backend as K
 import odl
 import numpy as np
 import matplotlib.pyplot as plt
+import argparse
 
 sess = K.get_session()
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-p", "--path", default="models/")
+args = vars(parser.parse_args())
+
+path = args['path']
 
 # ----------------------------------------
 # Set up forward operator using ODL library
@@ -32,12 +40,12 @@ FBP = odl.tomo.fbp_op(Radon, filter_type='Hann')
 
 util = Util()
 
-e = load_model('models/encoder.h5', custom_objects=util.custom_objects)
-d = load_model('models/decoder.h5', custom_objects=util.custom_objects)
-
-desyre = DESYRE(encoder=e, decoder=d, operator=Radon, size=size, sess=sess)
-
 if __name__ == '__main__':
+
+    e = load_model(path + 'encoder.h5', custom_objects=util.custom_objects)
+    d = load_model(path + 'decoder.h5', custom_objects=util.custom_objects)
+
+    desyre = DESYRE(encoder=e, decoder=d, operator=Radon, size=size, sess=sess)
 
     if not os.path.exists("images/"):
         os.mkdir("images/")
