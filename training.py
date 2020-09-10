@@ -1,6 +1,6 @@
 from imports.network import TightFrame, AutoencoderCP
 
-from keras.callbacks import ReduceLROnPlateau, EarlyStopping, ModelCheckpoint
+from keras.callbacks import ReduceLROnPlateau, ModelCheckpoint
 from keras.preprocessing.image import ImageDataGenerator
 from keras import optimizers
 
@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 
 # -------------------
 # Hyperparameter setup
+
 alpha = 1e-2
 beta = 1e-4
 f = 2
@@ -43,8 +44,6 @@ val_generator = datagen.flow_from_directory(datapath, target_size=(size, size),
 
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5,
                               min_lr=10 ** (-6), cooldown=10, verbose=1, mode='min')
-early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=20,
-                           verbose=1, mode='min')
 checkpoint = ModelCheckpoint(savepath + 'model.h5', monitor='val_loss',
                              mode='min', save_best_only=True, verbose=1)
 
