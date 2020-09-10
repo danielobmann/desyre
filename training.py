@@ -35,8 +35,8 @@ spe_val = 400//batch_size
 datapath = args['datapath']
 savepath = args['savepath']
 
-model_save = "models/" + savepath
-img_save = "images/" + savepath
+model_save = "models/" + savepath + "/"
+img_save = "images/" + savepath + "/"
 
 # -------------------
 # Set and start up training
