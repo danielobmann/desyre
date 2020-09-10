@@ -4,6 +4,7 @@ images/
 models/
 networks/
 .idea/
+__pycache__/
 
 # data
 *.npy
