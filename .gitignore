@@ -4,6 +4,7 @@ images/
 models/
 networks/
 jobs/
+.idea/
 
 # data
 *.npy
