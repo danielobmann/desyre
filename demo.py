@@ -1,3 +1,5 @@
+import os
+
 from imports.desyre_optimization import DESYRE
 from imports.customobjects import CustomObjects
 from keras.models import load_model
@@ -34,24 +36,52 @@ d = load_model('models/decoder.h5', custom_objects=co.custom_objects)
 
 desyre = DESYRE(encoder=e, decoder=d, operator=Radon, size=size, sess=sess)
 
-# Generate a box phantom for demonstration of the algorithm
-phantom = np.zeros((size, size))
-phantom[(size//2 - 50):(size//2 + 5), (size//2 - 50):(size//2 + 5)] = 1
+if __name__ == '__main__':
 
-data = Radon(phantom)
-data_noisy = data + np.random.normal(0, 1, data.shape)*np.mean(data)*0.05
+    if not os.path.exists("images/"):
+        os.mkdir("images/")
+        print("Created image folder for saving images.")
 
+    # Generate a box phantom for demonstration of the algorithm
+    phantom = np.zeros((size, size))
+    phantom[(size // 2 - 50):(size // 2 + 5), (size // 2 - 50):(size // 2 + 5)] = 1
 
-x0 = FBP(data_noisy)
-x_desyre, err = desyre.fista(x0, data_noisy, niter=10)
+    data = Radon(phantom)
+    data_noisy = data + np.random.normal(0, 1, data.shape) * 0.01
 
-plt.semilogy(err)
+    # Initialize optimization with FBP-reconstruction
+    x0 = FBP(data_noisy)
+    x_desyre, err = desyre.fista(x0, data_noisy, niter=20, alpha=1e-3, learning_rate=1e-3)
 
-plt.subplot(131)
-plt.imshow(phantom, cmap='bone')
+    fig, axs = plt.subplots(1, 1)
+    axs.semilogy(err)
+    axs.set_title("Error DESYRE optimization")
+    plt.savefig("images/demo_error.pdf")
 
-plt.subplot(132)
-plt.imshow(x0, cmap='bone')
+    fig, axs = plt.subplots(1, 3)
+    im = axs[0].imshow(phantom, cmap='bone')
+    plt.colorbar(im, ax=axs[0], fraction=0.046, pad=0.04)
+    axs[0].set_title("True phantom")
 
-plt.subplot(133)
-plt.imshow(x_desyre, cmap='bone')
+    im = axs[1].imshow(x0, cmap='bone')
+    plt.colorbar(im, ax=axs[1], fraction=0.046, pad=0.04)
+    axs[1].set_title("FBP phantom")
+
+    im = axs[2].imshow(x_desyre, cmap='bone')
+    plt.colorbar(im, ax=axs[2], fraction=0.046, pad=0.04)
+    axs[2].set_title("DESYRE phantom")
+    plt.subplots_adjust(wspace=0.8)
+    plt.savefig("images/demo_reconstruction.pdf")
+
+    fig, axs = plt.subplots(1, 2)
+    im = axs[0].imshow(data, cmap='bone')
+    axs[0].set_aspect(n_s / n_theta)
+    axs[0].set_title("True data")
+    plt.colorbar(im, ax=axs[0], fraction=0.046, pad=0.04)
+
+    im = axs[1].imshow(data_noisy, cmap='bone')
+    axs[1].set_aspect(n_s / n_theta)
+    axs[1].set_title("Noisy data")
+    plt.colorbar(im, ax=axs[1], fraction=0.046, pad=0.04)
+    plt.subplots_adjust(wspace=0.5)
+    plt.savefig("images/demo_data.pdf")
