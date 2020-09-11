@@ -12,12 +12,11 @@ import argparse
 
 sess = K.get_session()
 
-
 parser = argparse.ArgumentParser()
-parser.add_argument("-p", "--path", default="models/")
+parser.add_argument("-p", "--path", default="paper")
 args = vars(parser.parse_args())
 
-path = args['path']
+path = "models/" + args['path'] + "/"
 
 # ----------------------------------------
 # Set up forward operator using ODL library
