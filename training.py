@@ -17,7 +17,7 @@ parser.add_argument("-e", "--epochs", default=150)
 parser.add_argument("-b", "--batch", default=6)
 parser.add_argument("-a", "--alpha", default=1e-2)
 parser.add_argument("-r", "--beta", default=1e-4)
-parser.add_argument("-s", "--savepath", default="new/")
+parser.add_argument("-s", "--savepath", default="new")
 parser.add_argument("-d", "--datapath", default="data/")
 
 args = vars(parser.parse_args())
