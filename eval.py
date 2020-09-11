@@ -14,7 +14,7 @@ from PIL import Image
 sess = K.get_session()
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-p", "--path", default="working")
+parser.add_argument("-p", "--path", default="new")
 parser.add_argument("-t", "--theta", default=60)
 parser.add_argument("-a", "--alpha", default=1e-6)
 parser.add_argument("-i", "--iter", default=200)
