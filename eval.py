@@ -9,17 +9,23 @@ import odl
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
+from PIL import Image
 
 sess = K.get_session()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--path", default="working")
-parser.add_argument("-s", "--savepath", default="new")
 parser.add_argument("-t", "--theta", default=60)
+parser.add_argument("-a", "--alpha", default=1e-6)
+parser.add_argument("-i", "--iter", default=200)
+parser.add_argument("-l", "--learningrate", default=1e-3)
 args = vars(parser.parse_args())
 
 path = "models/" + args['path'] + "/"
-img_save = "images/" + args['savepath'] + "/"
+img_save = "images/" + args['path'] + "/"
+
+if not os.path.exists(img_save):
+    os.mkdir(img_save)
 
 # ----------------------------------------
 # Set up forward operator using ODL library
@@ -49,17 +55,21 @@ if __name__ == '__main__':
 
     desyre = DESYRE(encoder=e, decoder=d, operator=Radon, size=size, sess=sess)
 
-    # Generate a box phantom for demonstration of the algorithm
-    phantom = np.zeros((size, size))
-    a = 25
-    phantom[(size // 2 - a):(size // 2 + a), (size // 2 - a):(size // 2 + a)] = 1
+    # Set seed for reproducible results
+    np.random.seed(0)
+    file = np.random.choice(os.listdir("data/test/"))
+    phantom = np.asarray(Image.open("data/test/" + file).convert('L'))/255.
 
     data = Radon(phantom)
-    data_noisy = data + np.random.normal(0, 1, data.shape) * 0.01
+    data_noisy = data + np.random.normal(0, 1, data.shape) * 0.0 * np.mean(data)
 
     # Initialize optimization with FBP-reconstruction
-    x0 = FBP(data_noisy)
-    x_desyre, err = desyre.fista(x0, data_noisy, niter=30, alpha=1e-3, learning_rate=1e-3)
+    x0 = util.project(FBP(data_noisy))
+
+    alpha = float(args['alpha'])
+    niter = int(args['iter'])
+    learning_rate = float(args['learningrate'])
+    x_desyre, err = desyre.fista(x0, data_noisy, niter=niter, alpha=alpha, learning_rate=learning_rate)
 
     fig, axs = plt.subplots(1, 1)
     axs.semilogy(err)
@@ -93,3 +103,4 @@ if __name__ == '__main__':
     plt.colorbar(im, ax=axs[1], fraction=0.046, pad=0.04)
     plt.subplots_adjust(wspace=0.5)
     plt.savefig(img_save + "eval_data.pdf")
+    plt.clf()
