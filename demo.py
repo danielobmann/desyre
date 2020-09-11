@@ -38,6 +38,7 @@ FBP = odl.tomo.fbp_op(Radon, filter_type='Hann')
 # Set up DESYRE optimization with loaded networks
 
 util = Util()
+save_path = "images/" + args['path'] + "/"
 
 if __name__ == '__main__':
 
@@ -48,7 +49,12 @@ if __name__ == '__main__':
 
     if not os.path.exists("images/"):
         os.mkdir("images/")
+
+    if not os.path.exists(save_path):
+        os.mkdir(save_path)
         print("Created image folder for saving images.")
+
+
 
     # Generate a box phantom for demonstration of the algorithm
     phantom = np.zeros((size, size))
@@ -65,7 +71,7 @@ if __name__ == '__main__':
     fig, axs = plt.subplots(1, 1)
     axs.semilogy(err)
     axs.set_title("Error DESYRE optimization")
-    plt.savefig("images/demo_error.pdf")
+    plt.savefig(save_path + "demo_error.pdf")
 
     fig, axs = plt.subplots(1, 3)
     im = axs[0].imshow(phantom, cmap=cmap)
@@ -80,7 +86,7 @@ if __name__ == '__main__':
     plt.colorbar(im, ax=axs[2], fraction=0.046, pad=0.04)
     axs[2].set_title("DESYRE phantom")
     plt.subplots_adjust(wspace=0.8)
-    plt.savefig("images/demo_reconstruction.pdf")
+    plt.savefig(save_path + "demo_reconstruction.pdf")
 
     fig, axs = plt.subplots(1, 2)
     im = axs[0].imshow(data, cmap=cmap)
@@ -93,7 +99,7 @@ if __name__ == '__main__':
     axs[1].set_title("Noisy data")
     plt.colorbar(im, ax=axs[1], fraction=0.046, pad=0.04)
     plt.subplots_adjust(wspace=0.5)
-    plt.savefig("images/demo_data.pdf")
+    plt.savefig(save_path + "demo_data.pdf")
 
 
     def generate_atom(non_zero=5, I=[-1], c=1, idx=None, idy=None):
@@ -124,7 +130,7 @@ if __name__ == '__main__':
 
     plt.subplots_adjust(wspace=-0.1)
     plt.suptitle("Images synthesized from 1 non-zero entry (single levels)")
-    plt.savefig("images/demo_atoms.pdf")
+    plt.savefig(save_path + "demo_atoms.pdf")
 
     fig, axs = plt.subplots(3, 6)
     for row, i in enumerate([[-3, -1], [-3, -2], [-3, -4]]):
@@ -137,4 +143,4 @@ if __name__ == '__main__':
 
     plt.subplots_adjust(wspace=0.1)
     plt.suptitle("Images synthesized from 1 non-zero entry (combined levels)")
-    plt.savefig("images/demo_atoms_combined.pdf")
+    plt.savefig(save_path + "demo_atoms_combined.pdf")
