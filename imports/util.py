@@ -91,6 +91,11 @@ class Util:
 
     def zoomed_plot(self, x, xlim, ylim, zoom=2, text=None, textloc=[], fsize=18, cmap='bone'):
 
+        # This function allows one to create plots with "zoomed in" windows.
+        # The rectangle where one desires to zoom in is given using the xlim and ylim arguments.
+        # xlim and ylim should contain pixel values, e.g. if we haven an image of size 512 x 512 then
+        # xlim = [100, 150] and ylim = [100, 150] shows a zoomed in version of the pixels at locations in xlim and ylim.
+
         color = 'orange'
         fig, ax = plt.subplots()
         ax.imshow(np.flipud(x), cmap=cmap, vmin=0.0, vmax=1.0, origin="lower")
