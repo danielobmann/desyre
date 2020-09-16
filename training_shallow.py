@@ -5,14 +5,8 @@ from imports.network import TightFrame, AutoencoderCP
 from keras.callbacks import ReduceLROnPlateau
 from keras.preprocessing.image import ImageDataGenerator
 from keras import optimizers
-import tensorflow as tf
 import matplotlib.pyplot as plt
 import argparse
-
-
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.45)
-
-sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
 # -------------------
 # Hyperparameter setup
