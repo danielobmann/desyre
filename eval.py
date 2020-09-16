@@ -56,7 +56,7 @@ if __name__ == '__main__':
     desyre = DESYRE(encoder=e, decoder=d, operator=Radon, size=size, sess=sess)
 
     # Set seed for reproducible results
-    np.random.seed(0)
+    np.random.seed(69)
     file = np.random.choice(os.listdir("data/test/"))
     phantom = np.asarray(Image.open("data/test/" + file).convert('L'))/255.
 
@@ -103,4 +103,37 @@ if __name__ == '__main__':
     plt.colorbar(im, ax=axs[1], fraction=0.046, pad=0.04)
     plt.subplots_adjust(wspace=0.5)
     plt.savefig(img_save + "eval_data.pdf")
+    plt.clf()
+
+    # Plot reconstructions separately
+    plt.imshow(x_desyre, cmap=cmap, vmin=0, vmax=1)
+    plt.axis('off')
+    plt.savefig(img_save + "eval_desyre.pdf")
+    plt.clf()
+
+    plt.imshow(phantom, cmap=cmap, vmin=0, vmax=1)
+    plt.axis('off')
+    plt.savefig(img_save + "eval_phantom.pdf")
+    plt.clf()
+
+    plt.imshow(FBP(data_noisy), cmap=cmap, vmin=0, vmax=1)
+    plt.axis('off')
+    plt.savefig(img_save + "eval_fbp.pdf")
+    plt.clf()
+
+    print(util.PSNR(phantom, x_desyre))
+    print(util.NMSE(phantom, x_desyre))
+
+    XLIM, YLIM = [30, 80], [160, 210]
+
+    util.zoomed_plot(x_desyre, xlim=XLIM, ylim=YLIM, cmap=cmap)
+    plt.savefig(img_save + "desyre_zoom.pdf")
+    plt.clf()
+
+    util.zoomed_plot(phantom, xlim=XLIM, ylim=YLIM, cmap=cmap)
+    plt.savefig(img_save + "phantom_zoom.pdf")
+    plt.clf()
+
+    util.zoomed_plot(FBP(data_noisy), xlim=XLIM, ylim=YLIM, cmap=cmap)
+    plt.savefig(img_save + "fbp_zoom.pdf")
     plt.clf()
