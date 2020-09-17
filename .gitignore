@@ -11,3 +11,7 @@ old/
 *.npy
 *.h5
 *.hdf5
+
+# misc
+lpd.py
+imports/inversionnetwork.py
