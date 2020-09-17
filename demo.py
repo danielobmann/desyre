@@ -117,9 +117,9 @@ if __name__ == '__main__':
         return d.predict(xi)[0, ..., 0]
 
     C = [-3, -2, -1, 1, 2, 3]
-    idx, idy = 8, 8
     fig, axs = plt.subplots(4, 6)
     for row, i in enumerate([-1, -2, -3, -4]):
+        idx, idy = np.random.choice(16), np.random.choice(16)
         for col, c in enumerate(C):
             atom = generate_atom(I=[i], c=c, non_zero=1, idx=idx, idy=idy)
             axs[row, col].imshow(atom, cmap=cmap, vmin=0, vmax=0.5)
