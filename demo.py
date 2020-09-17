@@ -54,8 +54,6 @@ if __name__ == '__main__':
         os.mkdir(save_path)
         print("Created image folder for saving images.")
 
-
-
     # Generate a box phantom for demonstration of the algorithm
     phantom = np.zeros((size, size))
     a = 25
@@ -119,11 +117,12 @@ if __name__ == '__main__':
         return d.predict(xi)[0, ..., 0]
 
     C = [-3, -2, -1, 1, 2, 3]
+    idx, idy = 8, 8
     fig, axs = plt.subplots(4, 6)
     for row, i in enumerate([-1, -2, -3, -4]):
         for col, c in enumerate(C):
-            atom = generate_atom(I=[i], c=c, non_zero=1)
-            axs[row, col].imshow(atom, cmap=cmap)
+            atom = generate_atom(I=[i], c=c, non_zero=1, idx=idx, idy=idy)
+            axs[row, col].imshow(atom, cmap=cmap, vmin=0, vmax=0.5)
             axs[row, col].axis('off')
             if row == 0:
                 axs[row, col].set_title("c=%d" % c)
@@ -135,8 +134,8 @@ if __name__ == '__main__':
     fig, axs = plt.subplots(3, 6)
     for row, i in enumerate([[-3, -1], [-3, -2], [-3, -4]]):
         for col, c in enumerate(C):
-            atom = generate_atom(I=i, c=c, non_zero=1)
-            axs[row, col].imshow(atom, cmap=cmap)
+            atom = generate_atom(I=i, c=c, non_zero=1, idx=idx, idy=idy)
+            axs[row, col].imshow(atom, cmap=cmap, vmin=0, vmax=0.5)
             axs[row, col].axis('off')
             if row == 0:
                 axs[row, col].set_title("c=%d" % c)
