@@ -19,6 +19,7 @@ parser.add_argument("-t", "--theta", default=60)
 parser.add_argument("-a", "--alpha", default=1e-6)
 parser.add_argument("-i", "--iter", default=200)
 parser.add_argument("-l", "--learningrate", default=1e-3)
+parser.add_argument("-n", "--name", default="DESYRE")
 args = vars(parser.parse_args())
 
 path = "models/" + args['path'] + "/"
@@ -125,15 +126,15 @@ if __name__ == '__main__':
     print(util.NMSE(phantom, x_desyre))
 
     XLIM, YLIM = [30, 80], [160, 210]
-
-    util.zoomed_plot(x_desyre, xlim=XLIM, ylim=YLIM, cmap=cmap)
+    textloc = [0.01, 0.94]
+    util.zoomed_plot(x_desyre, xlim=XLIM, ylim=YLIM, cmap=cmap, text=args['name'], textloc=textloc)
     plt.savefig(img_save + "desyre_zoom.pdf")
     plt.clf()
 
-    util.zoomed_plot(phantom, xlim=XLIM, ylim=YLIM, cmap=cmap)
+    util.zoomed_plot(phantom, xlim=XLIM, ylim=YLIM, cmap=cmap, text="True", textloc=textloc)
     plt.savefig(img_save + "phantom_zoom.pdf")
     plt.clf()
 
-    util.zoomed_plot(FBP(data_noisy), xlim=XLIM, ylim=YLIM, cmap=cmap)
+    util.zoomed_plot(FBP(data_noisy), xlim=XLIM, ylim=YLIM, cmap=cmap, text="FBP", textloc=textloc)
     plt.savefig(img_save + "fbp_zoom.pdf")
     plt.clf()
