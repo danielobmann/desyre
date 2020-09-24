@@ -1,6 +1,5 @@
 import os
 import tensorflow as tf
-import keras.backend as K
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -9,7 +8,6 @@ from mpl_toolkits.axes_grid1.inset_locator import *
 
 class Util:
     def __init__(self):
-        self.custom_objects = {'psnr': self.KerasPSNR, 'nmse': self.KerasNMSE}
         pass
 
     @staticmethod
@@ -21,21 +19,21 @@ class Util:
         return np.clip(x, 0, 1)
 
     @staticmethod
-    def KerasPSNR(y_true, y_pred):
+    def psnr(y_true, y_pred):
         return tf.image.psnr(y_true, y_pred, max_val=1.0)
 
     @staticmethod
-    def KerasNMSE(y_true, y_pred):
-        m = K.mean(K.square(y_true - y_pred))
-        n = K.mean(K.square(y_true))
+    def nmse(y_true, y_pred):
+        m = tf.reduce_mean(tf.squared_difference(y_true, y_pred))
+        n = tf.reduce_mean(tf.squared_difference(y_true, 0))
         return m / n
 
     @staticmethod
-    def PSNR(x, xhat, maxvalue=1.):
+    def psnr_numpy(x, xhat, maxvalue=1.):
         return 10 * np.log10(maxvalue / np.mean((x - xhat) ** 2))
 
     @staticmethod
-    def NMSE(x, x_hat):
+    def nmse_numpy(x, x_hat):
         error = np.mean((x - x_hat) ** 2)
         normalizer = np.mean(x ** 2)
         return error / normalizer
