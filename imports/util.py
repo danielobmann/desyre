@@ -39,39 +39,6 @@ class Util:
         return error / normalizer
 
     @staticmethod
-    def plot(x, text=[], colorbar=True, axis=False, cmap='bone', col='orange', save=None, show=False, title=None):
-        fig, ax = plt.subplots()
-        im = ax.imshow(x, cmap=cmap, vmin=0.0, vmax=1.0)
-
-        if colorbar:
-            fig.colorbar(im)
-
-        if not axis:
-            ax.axis('off')
-
-        xstart = 0.01
-        ystart = 1 - 0.05
-        ystep = 0.05
-
-        for l in range(len(text)):
-            t = text[l]
-            ax.text(xstart, ystart - l * ystep, t, transform=ax.transAxes, color=col)
-
-        if not (save is None):
-            fig.savefig(save, format='pdf')
-
-        if show:
-            fig.show()
-
-        elif not show:
-            fig.clf()
-
-        if not (title is None):
-            ax.set_title(title)
-
-        pass
-
-    @staticmethod
     def _mark_inset(parent_axes, inset_axes, **kwargs):
         # This code is copied from the matplotlib source code and slightly modified.
         # This is done to avoid the 'connection lines'.
