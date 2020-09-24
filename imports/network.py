@@ -196,16 +196,6 @@ class TightFrame:
         model = Model(inputs=inp, outputs=model_out)
         return encoder, decoder, model
 
-    @staticmethod
-    def psnr(y_true, y_pred):
-        return tf.image.psnr(y_true, y_pred, max_val=1.0)
-
-    @staticmethod
-    def nmse(y_true, y_pred):
-        m = K.mean(K.square(y_true - y_pred))
-        n = K.mean(K.square(y_true))
-        return m / n
-
 
 class AutoencoderCP(Callback):
 
