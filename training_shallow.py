@@ -1,12 +1,13 @@
-import os
-
 from imports.network import TightFrame, AutoencoderCP
+from imports.util import Util
 
 from keras.callbacks import ReduceLROnPlateau
 from keras.preprocessing.image import ImageDataGenerator
 from keras import optimizers
 import matplotlib.pyplot as plt
 import argparse
+
+util = Util()
 
 # -------------------
 # Hyperparameter setup
@@ -42,23 +43,16 @@ img_save = "images/" + savepath + "/"
 # Set and start up training
 
 if __name__ == '__main__':
-    if not os.path.exists("models/"):
-        os.mkdir("models/")
-
-    if not os.path.exists("images/"):
-        os.mkdir("images/")
-
-    if not os.path.exists(model_save):
-        os.mkdir(model_save)
-
-    if not os.path.exists(img_save):
-        os.mkdir(img_save)
+    util.setup_path("models/")
+    util.setup_path("images/")
+    util.setup_path(model_save)
+    util.setup_path(img_save)
 
     tightframe = TightFrame(size=size, channels=channels)
     encoder, decoder, model = tightframe.get_shallow_network(alpha=alpha, beta=beta)
     optim = optimizers.Adam(lr=10 ** (-3))
 
-    model.compile(optimizer=optim, loss='mse', metrics=['mse', tightframe.psnr, tightframe.nmse])
+    model.compile(optimizer=optim, loss='mse', metrics=['mse', util.psnr, util.nmse])
 
     datagen = ImageDataGenerator(rescale=1. / 255)
     train_generator = datagen.flow_from_directory(datapath, target_size=(size, size),

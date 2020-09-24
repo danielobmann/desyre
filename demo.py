@@ -1,5 +1,3 @@
-import os
-
 from imports.desyre_optimization import DESYRE
 from imports.util import Util
 from keras.models import load_model
@@ -42,17 +40,13 @@ save_path = "images/" + args['path'] + "/"
 
 if __name__ == '__main__':
 
-    e = load_model(path + 'encoder.h5', custom_objects=util.custom_objects)
-    d = load_model(path + 'decoder.h5', custom_objects=util.custom_objects)
+    e = load_model(path + 'encoder.h5', custom_objects=None)
+    d = load_model(path + 'decoder.h5', custom_objects=None)
 
     desyre = DESYRE(encoder=e, decoder=d, operator=Radon, size=size, sess=sess)
 
-    if not os.path.exists("images/"):
-        os.mkdir("images/")
-
-    if not os.path.exists(save_path):
-        os.mkdir(save_path)
-        print("Created image folder for saving images.")
+    util.setup_path("images/")
+    util.setup_path(save_path)
 
     # Generate a box phantom for demonstration of the algorithm
     phantom = np.zeros((size, size))
