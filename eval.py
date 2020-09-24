@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import argparse
 from PIL import Image
 
+util = Util()
 sess = K.get_session()
 
 parser = argparse.ArgumentParser()
@@ -25,8 +26,7 @@ args = vars(parser.parse_args())
 path = "models/" + args['path'] + "/"
 img_save = "images/" + args['path'] + "/"
 
-if not os.path.exists(img_save):
-    os.mkdir(img_save)
+util.setup_path(img_save)
 
 # ----------------------------------------
 # Set up forward operator using ODL library
@@ -47,12 +47,11 @@ FBP = odl.tomo.fbp_op(Radon, filter_type='Hann')
 # ----------------------------------------
 # Set up DESYRE optimization with loaded networks
 
-util = Util()
 
 if __name__ == '__main__':
 
-    e = load_model(path + 'encoder.h5', custom_objects=util.custom_objects)
-    d = load_model(path + 'decoder.h5', custom_objects=util.custom_objects)
+    e = load_model(path + 'encoder.h5', custom_objects=None)
+    d = load_model(path + 'decoder.h5', custom_objects=None)
 
     desyre = DESYRE(encoder=e, decoder=d, operator=Radon, size=size, sess=sess)
 
@@ -122,8 +121,8 @@ if __name__ == '__main__':
     plt.savefig(img_save + "eval_fbp.pdf")
     plt.clf()
 
-    print(util.PSNR(phantom, x_desyre))
-    print(util.NMSE(phantom, x_desyre))
+    print(util.psnr_numpy(phantom, x_desyre))
+    print(util.nmse_numpy(phantom, x_desyre))
 
     XLIM, YLIM = [30, 80], [160, 210]
     textloc = [0.01, 0.94]
