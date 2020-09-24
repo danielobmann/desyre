@@ -1,3 +1,4 @@
+import os
 import tensorflow as tf
 import keras.backend as K
 import numpy as np
@@ -10,6 +11,10 @@ class Util:
     def __init__(self):
         self.custom_objects = {'psnr': self.KerasPSNR, 'nmse': self.KerasNMSE}
         pass
+
+    @staticmethod
+    def cosine_decay(epoch, total, initial=1e-3):
+        return initial / 2. * (1 + np.cos(np.pi * epoch / total))
 
     @staticmethod
     def project(x):
@@ -118,3 +123,11 @@ class Util:
         if not (text is None):
             ax.text(textloc[0], textloc[1], text, color=color, fontdict={'size': fsize}, transform=ax.transAxes)
         pass
+
+    @staticmethod
+    def setup_path(path, verbose=0):
+        if not os.path.exists(path):
+            os.mkdir(path)
+
+            if verbose:
+                print("Created new path %s." % path)
