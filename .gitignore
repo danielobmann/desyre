@@ -15,4 +15,5 @@ jupyter/
 
 # misc
 lpd.py
+lpd_eval.py
 imports/inversionnetwork.py
